@@ -166,37 +166,76 @@
 ;
 ; Implementations for Clojure's built-in types
 ;
-(defmethod zero? java.lang.Number
-  [x]
-  (clojure.core/zero? x))
+#?(:clj
+   (do
+     (defmethod zero? java.lang.Number
+       [x]
+       (clojure.core/zero? x))
 
-(defmethod pos? java.lang.Number
-  [x]
-  (clojure.core/pos? x))
+     (defmethod pos? java.lang.Number
+       [x]
+       (clojure.core/pos? x))
 
-(defmethod neg? java.lang.Number
-  [x]
-  (clojure.core/neg? x))
+     (defmethod neg? java.lang.Number
+       [x]
+       (clojure.core/neg? x))
 
-(defmethod = [root-type root-type]
-  [x y]
-  (clojure.core/= x y))
+     (defmethod = [root-type root-type]
+       [x y]
+       (clojure.core/= x y))
 
-(defmethod > [java.lang.Number java.lang.Number]
-  [x y]
-  (clojure.core/> x y))
+     (defmethod > [java.lang.Number java.lang.Number]
+       [x y]
+       (clojure.core/> x y))
 
-(defmethod < [java.lang.Number java.lang.Number]
-  [x y]
-  (clojure.core/< x y))
+     (defmethod < [java.lang.Number java.lang.Number]
+       [x y]
+       (clojure.core/< x y))
 
-(defmethod >= [java.lang.Number java.lang.Number]
-  [x y]
-  (clojure.core/>= x y))
+     (defmethod >= [java.lang.Number java.lang.Number]
+       [x y]
+       (clojure.core/>= x y))
 
-(defmethod <= [java.lang.Number java.lang.Number]
-  [x y]
-  (clojure.core/<= x y))
+     (defmethod <= [java.lang.Number java.lang.Number]
+       [x y]
+       (clojure.core/<= x y))))
+
+;
+; Implementations for ClojureScript's built-in types
+;
+#?(:cljs
+   (do
+     (defmethod zero? js/Number
+       [x]
+       (cljs.core/zero? x))
+
+     (defmethod pos? js/Number
+       [x]
+       (cljs.core/pos? x))
+
+     (defmethod neg? js/Number
+       [x]
+       (cljs.core/neg? x))
+
+     (defmethod = [root-type root-type]
+       [x y]
+       (cljs.core/= x y))
+
+     (defmethod > [js/Number js/Number]
+       [x y]
+       (cljs.core/> x y))
+
+     (defmethod < [js/Number js/Number]
+       [x y]
+       (cljs.core/< x y))
+
+     (defmethod >= [js/Number js/Number]
+       [x y]
+       (cljs.core/>= x y))
+
+     (defmethod <= [js/Number js/Number]
+       [x y]
+       (cljs.core/<= x y))))
 
 ;
 ; Functions defined in terms of the comparison operators

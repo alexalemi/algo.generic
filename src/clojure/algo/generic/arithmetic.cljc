@@ -14,7 +14,7 @@
   ^{:author "Konrad Hinsen"
      :doc "Generic arithmetic interface
            This library defines generic versions of + - * / as multimethods
-           that can be defined for any type. The minimal required 
+           that can be defined for any type. The minimal required
            implementations for a type are binary + and * plus unary - and /.
            Everything else is derived from these automatically. Explicit
            binary definitions for - and / can be provided for
@@ -42,7 +42,7 @@
 ; in principle to implement [::unary my-type] as well, though this
 ; doesn't make any sense.
 ;
-(defmulti + 
+(defmulti +
   "Return the sum of all arguments. The minimal implementation for type
    ::my-type is the binary form with dispatch value [::my-type ::my-type]."
   {:arglists '([x] [x y] [x y & more])}
@@ -83,7 +83,7 @@
 
 (defmethod - nulary-type
   []
-  (throw (java.lang.IllegalArgumentException.
+  (throw (#?(:clj java.lang.IllegalArgumentException. :cljs js/Error.)
           "Wrong number of arguments passed")))
 
 (defmethod - [root-type zero-type]
@@ -149,7 +149,7 @@
 
 (defmethod / nulary-type
   []
-  (throw (java.lang.IllegalArgumentException.
+  (throw (#?(:clj java.lang.IllegalArgumentException. :cljs js/Error.)
           "Wrong number of arguments passed")))
 
 (defmethod / [root-type one-type]
@@ -167,35 +167,30 @@
     (recur (/ x y) (first more) (next more))
     (/ x y)))
 
-;
-; Macros to permit access to the / multimethod via namespace qualification
-;
-(defmacro defmethod*
-  "Define a method implementation for the multimethod name in namespace ns.
-   Required for implementing the division function from another namespace."
-  [ns name & args]
-  (let [qsym (symbol (str ns) (str name))]
-    `(defmethod ~qsym ~@args)))
+#?(:clj
+   (do
+     (defmethod + [java.lang.Number java.lang.Number]
+       [x y] (clojure.core/+ x y))
 
-(defmacro qsym
-  "Create the qualified symbol corresponding to sym in namespace ns.
-   Required to access the division function from another namespace,
-   e.g. as (qsym clojure.algo.generic.arithmetic /)."
-  [ns sym]
-  (symbol (str ns) (str sym)))
+     (defmethod - java.lang.Number
+       [x] (clojure.core/- x))
 
-;
-; Minimal implementations for java.lang.Number
-;
-(defmethod + [java.lang.Number java.lang.Number]
-  [x y] (clojure.core/+ x y))
+     (defmethod * [java.lang.Number java.lang.Number]
+       [x y] (clojure.core/* x y))
 
-(defmethod - java.lang.Number
-  [x] (clojure.core/- x))
+     (defmethod / java.lang.Number
+       [x] (clojure.core// x))))
 
-(defmethod * [java.lang.Number java.lang.Number]
-  [x y] (clojure.core/* x y))
+#?(:cljs
+   (do
+     (defmethod + [js/Number js/Number]
+       [x y] (cljs.core/+ x y))
 
-(defmethod / java.lang.Number
-  [x] (clojure.core// x))
+     (defmethod - js/Number
+       [x] (cljs.core/- x))
 
+     (defmethod * [js/Number js/Number]
+       [x y] (cljs.core/* x y))
+
+     (defmethod / js/Number
+       [x] (cljs.core// x))))

@@ -17,7 +17,13 @@
            collection-related functions as multimethods that can be
            defined for any type."}
   clojure.algo.generic.collection
-  (:refer-clojure :exclude [assoc conj dissoc empty get into seq]))
+  (:refer-clojure :rename {assoc core-assoc
+                           conj core-conj
+                           dissoc core-dissoc
+                           empty core-empty
+                           get core-get
+                           into core-into
+                           seq core-seq}))
 
 ;
 ; assoc
@@ -31,7 +37,7 @@
 
 (defmethod assoc :default
   [map & key-val-pairs]
-  (apply clojure.core/assoc map key-val-pairs))
+  (apply core-assoc map key-val-pairs))
 
 ;
 ; conj
@@ -43,7 +49,7 @@
 
 (defmethod conj :default
   [coll & xs]
-  (apply clojure.core/conj coll xs))
+  (apply core-conj coll xs))
 
 ;
 ; dissoc
@@ -57,7 +63,7 @@
 
 (defmethod dissoc :default
   [map & keys]
-  (apply clojure.core/dissoc map keys))
+  (apply core-dissoc map keys))
 
 ;
 ; empty
@@ -69,7 +75,7 @@
 
 (defmethod empty :default
   [coll]
-  (clojure.core/empty coll))
+  (core-empty coll))
 
 ;
 ; get
@@ -82,9 +88,9 @@
 
 (defmethod get :default
   ([coll key]
-     (clojure.core/get coll key))
+     (core-get coll key))
   ([coll key not-found]
-     (clojure.core/get coll key not-found)))
+     (core-get coll key not-found)))
 
 ;
 ; into
@@ -111,4 +117,4 @@
 
 (defmethod seq :default
   [s]
-  (clojure.core/seq s))
+  (core-seq s))

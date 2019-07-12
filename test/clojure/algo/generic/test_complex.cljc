@@ -14,7 +14,9 @@
         [clojure.algo.generic :only (root-type)])
   (:require [clojure.algo.generic.arithmetic :as ga]
             [clojure.algo.generic.math-functions :as gmf]
-	    [clojure.algo.generic.comparison :as gc]))
+            [clojure.algo.generic.comparison :as gc])
+  #?(:clj (:require [clojure.algo.generic.macros :as m])
+     :cljs (:require-macros [clojure.algo.generic.macros :as m])))
 
 ; Define a basic complex number type
 (defrecord complex-number [real imag])
@@ -79,11 +81,11 @@
   [x y]
   (complex (ga/* x (real y)) (ga/* x (imag y))))
 
-(ga/defmethod* ga / complex-number
+(m/defmethod* ga / complex-number
   [x]
   (let [rx (real x)
         ix (imag x)
-	den ((ga/qsym ga /) (ga/+ (ga/* rx rx) (ga/* ix ix)))]
+        den ((m/qsym ga /) (ga/+ (ga/* rx rx) (ga/* ix ix)))]
     (complex (ga/* rx den) (ga/- (ga/* ix den)))))
 
 ; Math functions
@@ -106,28 +108,28 @@
         0
         (let [; The basic formula would say
               ;    abs (gmf/sqrt (ga/+ (ga/* r r) (ga/* i i)))
-	      ;    p   (gmf/sqrt (ga/* one-half (ga/+ abs r)))
-	      ; but the slightly more complicated one below
-	      ; avoids overflow for large r or i.
-	      ar  (gmf/abs r)
-	      ai  (gmf/abs i)
-	      r8  (ga/* one-eighth ar)
-	      i8  (ga/* one-eighth ai)
-	      abs (gmf/sqrt (ga/+ (ga/* r8 r8) (ga/* i8 i8)))
-	      p   (ga/* 2 (gmf/sqrt (ga/+ abs r8)))
-	      q   ((ga/qsym ga /) ai (ga/* 2 p))
-	      s   (gmf/sgn i)]
-	  (if (gc/< r 0)
-	    (complex q (ga/* s p))
-	    (complex p (ga/* s q))))))))
+              ;    p   (gmf/sqrt (ga/* one-half (ga/+ abs r)))
+              ; but the slightly more complicated one below
+              ; avoids overflow for large r or i.
+              ar  (gmf/abs r)
+              ai  (gmf/abs i)
+              r8  (ga/* one-eighth ar)
+              i8  (ga/* one-eighth ai)
+              abs (gmf/sqrt (ga/+ (ga/* r8 r8) (ga/* i8 i8)))
+              p   (ga/* 2 (gmf/sqrt (ga/+ abs r8)))
+              q   ((m/qsym ga /) ai (ga/* 2 p))
+              s   (gmf/sgn i)]
+          (if (gc/< r 0)
+            (complex q (ga/* s p))
+            (complex p (ga/* s q))))))))
 
 (defmethod gmf/exp complex-number
   [x]
   (let [r (real x)
         i (imag x)
-	exp-r (gmf/exp r)
-	cos-i (gmf/cos i)
-	sin-i (gmf/sin i)]
+        exp-r (gmf/exp r)
+        cos-i (gmf/cos i)
+        sin-i (gmf/sin i)]
     (complex (ga/* exp-r cos-i) (ga/* exp-r sin-i))))
 
 ; Complex number tests
@@ -195,7 +197,7 @@
   (is (gc/= (ga/* -1 (complex -3 -7)) (complex 3 7)))
   (is (gc/= (ga/* (complex -3 -7) -1) (complex 3 7))))
 
-(let [div (ga/qsym ga /)]
+(let [div (m/qsym ga /)]
   (deftest complex-division
     (is (gc/= (div (complex 1 2) (complex 1 2)) 1))
     (is (gc/= (div (complex 1 2) (complex -3 -7)) (complex -17/58 1/58)))
