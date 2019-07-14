@@ -50,6 +50,9 @@ already derived from `root-type`.
   provide explicit implementations for binary `-` and `/` for
   efficiency, otherwise the default implementations are `(- a b) => (+ a (- b))`
    and `(/ a b) => (* a (/ b))`.
+   
+  **WARNING:** ClojureScript has a BUG when we define a multimethod named `/`. 
+  So in CLJS `/` is implemented as the multimethod `div` (until the BUG is solved).
 
 * **algo.generic.collection** provides generic versions of `assoc`,
   `dissoc`, `get`, `conj`, `empty`, `into`, and `seq`. `into` has a
@@ -75,23 +78,12 @@ already derived from `root-type`.
 
 ## Releases and dependency information
 
-Latest stable release: 0.1.3
-
-* [All released versions](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.clojure%22%20AND%20a%3A%22algo.generic%22)
-
-* [Development Snapshot Versions](https://oss.sonatype.org/index.html#nexus-search;gav~org.clojure~algo.generic~~~)
+Latest stable release: 0.1.0
 
 [Leiningen](http://github.com/technomancy/leiningen/) dependency information:
 
-    [org.clojure/algo.generic "0.1.3"]
+    [g7s/algo.generic "0.1.0"]
 
-[Maven](http://maven.apache.org/) dependency information:
-
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>algo.generic</artifactId>
-      <version>0.1.3</version>
-    </dependency>
 
 ## License
 
