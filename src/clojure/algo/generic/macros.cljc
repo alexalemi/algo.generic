@@ -48,7 +48,7 @@
        (defmulti ~name
          ~(str "Return the " name " of x and y.")
          {:arglists '([~'x ~'y])}
-         two-types)
+         (fn [x# y#] [(type x#) (type y#)]))
        (defmethod ~name (mcase :clj [java.lang.Number java.lang.Number]
                                :cljs [js/Number js/Number])
          [~'x ~'y]

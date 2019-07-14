@@ -9,12 +9,16 @@
 ;; remove this notice, or any other, from this software.
 
 (ns clojure.algo.generic.test-comparison
-  (:use [clojure.test :only (deftest is are run-tests)])
-  (:require [clojure.algo.generic.comparison :as gc]))
+  (:require #?(:cljs [cljs.test :refer [deftest is are run-tests]]
+               :clj [clojure.test :refer [deftest is are run-tests]])
+            [clojure.algo.generic :refer [root-type]]
+            [clojure.algo.generic.comparison :as gc]))
 
 ; Define a class that wraps a number.
 (defrecord my-number [value])
 (defn n [value] (new my-number value))
+
+#?(:cljs (derive my-number root-type))
 
 ; Implement the minimal comparison multimethods.
 (defmethod gc/zero? my-number

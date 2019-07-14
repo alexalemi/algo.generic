@@ -10,16 +10,19 @@
 ;; remove this notice, or any other, from this software.
 
 (ns clojure.algo.generic.test-complex
-  (:use [clojure.test :only (deftest is are run-tests)]
-        [clojure.algo.generic :only (root-type)])
-  (:require [clojure.algo.generic.arithmetic :as ga]
+  (:require [clojure.algo.generic :refer [root-type]]
+            [clojure.algo.generic.arithmetic :as ga]
             [clojure.algo.generic.math-functions :as gmf]
-            [clojure.algo.generic.comparison :as gc])
-  #?(:clj (:require [clojure.algo.generic.macros :as m])
-     :cljs (:require-macros [clojure.algo.generic.macros :as m])))
+            [clojure.algo.generic.comparison :as gc]
+            #?@(:clj [[clojure.test :refer [deftest is are run-tests]]
+                      [clojure.algo.generic.macros :as m]])
+            #?(:cljs [cljs.test :refer [deftest is are run-tests]]))
+  #?(:cljs (:require-macros [clojure.algo.generic.macros :as m])))
 
 ; Define a basic complex number type
 (defrecord complex-number [real imag])
+
+#?(:cljs (derive complex-number root-type))
 
 (defn complex
   [real imag]
@@ -81,11 +84,11 @@
   [x y]
   (complex (ga/* x (real y)) (ga/* x (imag y))))
 
-(m/defmethod* ga / complex-number
+(m/defmethod* ga #?(:clj / :cljs div) complex-number
   [x]
   (let [rx (real x)
         ix (imag x)
-        den ((m/qsym ga /) (ga/+ (ga/* rx rx) (ga/* ix ix)))]
+        den ((m/qsym ga #?(:clj / :cljs div)) (ga/+ (ga/* rx rx) (ga/* ix ix)))]
     (complex (ga/* rx den) (ga/- (ga/* ix den)))))
 
 ; Math functions
@@ -117,7 +120,7 @@
               i8  (ga/* one-eighth ai)
               abs (gmf/sqrt (ga/+ (ga/* r8 r8) (ga/* i8 i8)))
               p   (ga/* 2 (gmf/sqrt (ga/+ abs r8)))
-              q   ((m/qsym ga /) ai (ga/* 2 p))
+              q   ((m/qsym ga #?(:clj / :cljs div)) ai (ga/* 2 p))
               s   (gmf/sgn i)]
           (if (gc/< r 0)
             (complex q (ga/* s p))
@@ -197,30 +200,31 @@
   (is (gc/= (ga/* -1 (complex -3 -7)) (complex 3 7)))
   (is (gc/= (ga/* (complex -3 -7) -1) (complex 3 7))))
 
-(let [div (m/qsym ga /)]
-  (deftest complex-division
-    (is (gc/= (div (complex 1 2) (complex 1 2)) 1))
-    (is (gc/= (div (complex 1 2) (complex -3 -7)) (complex -17/58 1/58)))
-    (is (gc/= (div (complex -3 -7) (complex 1 2)) (complex -17/5 -1/5)))
-    (is (gc/= (div (complex 1 2) 3) (complex 1/3 2/3)))
-    (is (gc/= (div 3 (complex 1 2)) (complex 3/5 -6/5)))
-    (is (gc/= (div (complex 1 2) -1) (complex -1 -2)))
-    (is (gc/= (div -1 (complex 1 2)) (complex -1/5 2/5)))
-    (is (gc/= (div (complex -3 -7) (complex 1 2)) (complex -17/5 -1/5)))
-    (is (gc/= (div (complex 1 2) (complex -3 -7)) (complex -17/58 1/58)))
-    (is (gc/= (div (complex -3 -7) (complex -3 -7)) 1))
-    (is (gc/= (div (complex -3 -7) 3) (complex -1 -7/3)))
-    (is (gc/= (div 3 (complex -3 -7)) (complex -9/58 21/58)))
-    (is (gc/= (div (complex -3 -7) -1) (complex 3 7)))
-    (is (gc/= (div -1 (complex -3 -7)) (complex 3/58 -7/58)))
-    (is (gc/= (div 3 (complex 1 2)) (complex 3/5 -6/5)))
-    (is (gc/= (div (complex 1 2) 3) (complex 1/3 2/3)))
-    (is (gc/= (div 3 (complex -3 -7)) (complex -9/58 21/58)))
-    (is (gc/= (div (complex -3 -7) 3) (complex -1 -7/3)))
-    (is (gc/= (div -1 (complex 1 2)) (complex -1/5 2/5)))
-    (is (gc/= (div (complex 1 2) -1) (complex -1 -2)))
-    (is (gc/= (div -1 (complex -3 -7)) (complex 3/58 -7/58)))
-    (is (gc/= (div (complex -3 -7) -1) (complex 3 7)))))
+#?(:clj
+   (let [div (m/qsym ga #?(:clj / :cljs div))]
+     (deftest complex-division
+       (is (gc/= (div (complex 1 2) (complex 1 2)) 1))
+       (is (gc/= (div (complex 1 2) (complex -3 -7)) (complex -17/58 1/58)))
+       (is (gc/= (div (complex -3 -7) (complex 1 2)) (complex -17/5 -1/5)))
+       (is (gc/= (div (complex 1 2) 3) (complex 1/3 2/3)))
+       (is (gc/= (div 3 (complex 1 2)) (complex 3/5 -6/5)))
+       (is (gc/= (div (complex 1 2) -1) (complex -1 -2)))
+       (is (gc/= (div -1 (complex 1 2)) (complex -1/5 2/5)))
+       (is (gc/= (div (complex -3 -7) (complex 1 2)) (complex -17/5 -1/5)))
+       (is (gc/= (div (complex 1 2) (complex -3 -7)) (complex -17/58 1/58)))
+       (is (gc/= (div (complex -3 -7) (complex -3 -7)) 1))
+       (is (gc/= (div (complex -3 -7) 3) (complex -1 -7/3)))
+       (is (gc/= (div 3 (complex -3 -7)) (complex -9/58 21/58)))
+       (is (gc/= (div (complex -3 -7) -1) (complex 3 7)))
+       (is (gc/= (div -1 (complex -3 -7)) (complex 3/58 -7/58)))
+       (is (gc/= (div 3 (complex 1 2)) (complex 3/5 -6/5)))
+       (is (gc/= (div (complex 1 2) 3) (complex 1/3 2/3)))
+       (is (gc/= (div 3 (complex -3 -7)) (complex -9/58 21/58)))
+       (is (gc/= (div (complex -3 -7) 3) (complex -1 -7/3)))
+       (is (gc/= (div -1 (complex 1 2)) (complex -1/5 2/5)))
+       (is (gc/= (div (complex 1 2) -1) (complex -1 -2)))
+       (is (gc/= (div -1 (complex -3 -7)) (complex 3/58 -7/58)))
+       (is (gc/= (div (complex -3 -7) -1) (complex 3 7))))))
 
 (deftest complex-conjugate
   (is (gc/= (gmf/conjugate (complex 1 2)) (complex 1 -2)))

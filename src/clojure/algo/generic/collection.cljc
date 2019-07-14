@@ -11,19 +11,13 @@
 ;; remove this notice, or any other, from this software.
 
 (ns
-  ^{:author "Konrad Hinsen"
-     :doc "Generic collection interface
+    ^{:author "Konrad Hinsen"
+      :doc "Generic collection interface
            This library defines generic versions of common
            collection-related functions as multimethods that can be
            defined for any type."}
-  clojure.algo.generic.collection
-  (:refer-clojure :rename {assoc core-assoc
-                           conj core-conj
-                           dissoc core-dissoc
-                           empty core-empty
-                           get core-get
-                           into core-into
-                           seq core-seq}))
+    clojure.algo.generic.collection
+    (:refer-clojure :exclude [assoc conj dissoc empty get into seq]))
 
 ;
 ; assoc
@@ -37,7 +31,7 @@
 
 (defmethod assoc :default
   [map & key-val-pairs]
-  (apply core-assoc map key-val-pairs))
+  (apply #?(:clj clojure.core/assoc :cljs cljs.core/assoc) map key-val-pairs))
 
 ;
 ; conj
@@ -49,7 +43,7 @@
 
 (defmethod conj :default
   [coll & xs]
-  (apply core-conj coll xs))
+  (apply #?(:clj clojure.core/conj :cljs cljs.core/conj) coll xs))
 
 ;
 ; dissoc
@@ -63,7 +57,7 @@
 
 (defmethod dissoc :default
   [map & keys]
-  (apply core-dissoc map keys))
+  (apply #?(:clj clojure.core/dissoc :cljs cljs.core/dissoc) map keys))
 
 ;
 ; empty
@@ -75,7 +69,7 @@
 
 (defmethod empty :default
   [coll]
-  (core-empty coll))
+  (#?(:clj clojure.core/empty :cljs cljs.core/empty) coll))
 
 ;
 ; get
@@ -88,9 +82,9 @@
 
 (defmethod get :default
   ([coll key]
-     (core-get coll key))
+   (#?(:clj clojure.core/get :cljs cljs.core/get) coll key))
   ([coll key not-found]
-     (core-get coll key not-found)))
+   (#?(:clj clojure.core/get :cljs cljs.core/get) coll key not-found)))
 
 ;
 ; into
@@ -117,4 +111,4 @@
 
 (defmethod seq :default
   [s]
-  (core-seq s))
+  (#?(:clj clojure.core/seq :cljs cljs.core/seq) s))

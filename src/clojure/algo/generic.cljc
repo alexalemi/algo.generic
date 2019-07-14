@@ -43,11 +43,10 @@
 ; not likely to be frequent.
 ;
 (def root-type ::any)
-(derive Object root-type)
+(derive #?(:clj Object :cljs js/Object) root-type)
 
 ;
 ; Symbols referring to ::nulary and ::n-ary
 ;
 (def nulary-type ::nulary)
 (def nary-type ::nary)
-

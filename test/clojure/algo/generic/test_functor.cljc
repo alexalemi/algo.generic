@@ -9,9 +9,10 @@
 ;; remove this notice, or any other, from this software.
 
 (ns clojure.algo.generic.test-functor
-  (:use [clojure.test :only (deftest is are run-tests)])
-  (:require [clojure.algo.generic.functor :as gf])
-  (:require [clojure.algo.generic.collection :as gc]))
+  (:require #?(:cljs [cljs.test :refer [deftest is are run-tests]]
+               :clj [clojure.test :refer [deftest is are run-tests]])
+            [clojure.algo.generic.functor :as gf]
+            [clojure.algo.generic.collection :as gc]))
 
 ; Test implementations for CLojure's built-in collections
 (deftest builtin-collections
@@ -33,8 +34,9 @@
            (map (comp - f) x)))))
 
 ; Futures and delays
-(deftest future-test
-  (is (= 2 @(gf/fmap inc (future 1)))))
+#?(:clj
+   (deftest future-test
+     (is (= 2 @(gf/fmap inc (future 1))))))
 
 (deftest delay-test
   (is (= 2 @(gf/fmap inc (delay 1)))))
@@ -71,4 +73,3 @@
 (deftest multiset-tests
   (are [a b] (= a b)
        (gf/fmap inc (mset 1 2 3)) (mset 2 3 4)))
-

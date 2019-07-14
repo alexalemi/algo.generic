@@ -11,15 +11,15 @@
 ;; remove this notice, or any other, from this software.
 
 (ns
-  ^{:author "Konrad Hinsen"
-     :doc "Generic comparison interface
+    ^{:author "Konrad Hinsen"
+      :doc "Generic comparison interface
            This library defines generic versions of = not= < > <= >= zero?
            as multimethods that can be defined for any type. Of the
            greater/less-than relations, types must minimally implement >."}
-  clojure.algo.generic.comparison
-  (:refer-clojure :exclude [= not= < > <= >= zero? pos? neg? min max])
-  (:use [clojure.algo.generic
-         :only (root-type nulary-type nary-type nary-dispatch)]))
+    clojure.algo.generic.comparison
+    (:refer-clojure :exclude [= not= < > <= >= zero? pos? neg? min max])
+    (:use [clojure.algo.generic
+           :only (root-type nulary-type nary-type nary-dispatch)]))
 
 ;
 ; zero? pos? neg?

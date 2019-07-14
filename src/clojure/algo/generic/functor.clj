@@ -11,9 +11,9 @@
 ;; remove this notice, or any other, from this software.
 
 (ns
-  ^{:author "Konrad Hinsen"
-     :doc "Generic functor interface (fmap)"}
-  clojure.algo.generic.functor)
+    ^{:author "Konrad Hinsen"
+      :doc "Generic functor interface (fmap)"}
+    clojure.algo.generic.functor)
 
 
 (defmulti fmap
