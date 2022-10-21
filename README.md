@@ -51,9 +51,6 @@ already derived from `root-type`.
   efficiency, otherwise the default implementations are `(- a b) => (+ a (- b))`
    and `(/ a b) => (* a (/ b))`.
    
-  **WARNING:** ClojureScript has a [BUG](https://clojure.atlassian.net/browse/CLJS-3135) when we define a multimethod named `/`. 
-  So in CLJS `/` is implemented as the multimethod `div` (until the BUG is solved).
-
 * **algo.generic.collection** provides generic versions of `assoc`,
   `dissoc`, `get`, `conj`, `empty`, `into`, and `seq`. `into` has a
   default implementation in terms of `conj` and `seq`, but you may

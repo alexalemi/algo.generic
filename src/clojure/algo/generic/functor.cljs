@@ -26,8 +26,10 @@
 ; Using fn? is hacky, but unlike on the JVM (= (isa? IFn (type #())) false) and
 ; (like on the JVM) (type #()) doesn't return a type that would fit a defmethod.
 
-(doseq [t [cljs.core/List
+(doseq [t [cljs.core/IList
+           cljs.core/List
            cljs.core/Range
+           cljs.core/IntegerRange
            cljs.core/IndexedSeq
            cljs.core/LazySeq]]
  (defmethod fmap t
@@ -58,6 +60,10 @@
 (prefer-method fmap cljs.core/PersistentArrayMap cljs.core/IFn)
 (prefer-method fmap cljs.core/PersistentHashSet cljs.core/IFn)
 (prefer-method fmap cljs.core/PersistentTreeSet cljs.core/IFn)
+
+(defmethod fmap cljs.core/ISeq
+  [f s]
+  (map f s))
 
 (defmethod fmap cljs.core/Delay
   [f d]

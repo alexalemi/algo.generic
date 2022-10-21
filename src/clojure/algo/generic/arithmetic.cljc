@@ -143,33 +143,32 @@
 ;; implementation is provided as (* x (/ y)), but it is possible to
 ;; implement binary [my-type my-type] explicitly for efficiency reasons.
 
-;;; NOTE: ClojureScript has a BUG with / as a multimethod so we have to use another name
-(defmulti #?(:cljs div :clj /)
+(defmulti /
   "Return the quotient of the first argument and the product of all other
    arguments. The minimal implementation for type ::my-type is the binary
    form with dispatch value [::my-type ::my-type]."
   {:arglists '([x] [x y] [x y & more])}
   nary-dispatch)
 
-(defmethod #?(:cljs div :clj /) nulary-type
+(defmethod / nulary-type
   []
   (throw (#?(:clj java.lang.IllegalArgumentException. :cljs js/Error.)
           "Wrong number of arguments passed")))
 
-(defmethod #?(:cljs div :clj /) [root-type one-type]
+(defmethod / [root-type one-type]
   [x y] x)
 
-(defmethod #?(:cljs div :clj /) [one-type root-type]
-  [x y] (#?(:cljs div :clj /) y))
+(defmethod / [one-type root-type]
+  [x y] (/ y))
 
-(defmethod #?(:cljs div :clj /) [root-type root-type]
-  [x y] (* x (#?(:cljs div :clj /) y)))
+(defmethod / [root-type root-type]
+  [x y] (* x (/ y)))
 
-(defmethod #?(:cljs div :clj /) nary-type
+(defmethod / nary-type
   [x y & more]
   (if more
-    (recur (#?(:cljs div :clj /) x y) (first more) (next more))
-    (#?(:cljs div :clj /) x y)))
+    (recur (/ x y) (first more) (next more))
+    (/ x y)))
 
 #?(:clj
    (do
@@ -182,7 +181,7 @@
      (defmethod * [java.lang.Number java.lang.Number]
        [x y] (clojure.core/* x y))
 
-     (defmethod #?(:cljs div :clj /) java.lang.Number
+     (defmethod / java.lang.Number
        [x] (clojure.core// x))))
 
 #?(:cljs
@@ -196,5 +195,5 @@
      (defmethod * [js/Number js/Number]
        [x y] (cljs.core/* x y))
 
-     (defmethod #?(:cljs div :clj /) js/Number
+     (defmethod / js/Number
        [x] (cljs.core// x))))

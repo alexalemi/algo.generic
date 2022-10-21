@@ -8,7 +8,7 @@
 ;; agreeing to be bound by the terms of this license.  You must not
 ;; remove this notice, or any other, from this software.
 
-(ns clojure.algo.generic.test-collection
+(ns collection-test
   (:require #?(:cljs [cljs.test :refer [deftest is are run-tests]]
                :clj [clojure.test :refer [deftest is are run-tests]])
             [clojure.algo.generic.collection :as gc]))
